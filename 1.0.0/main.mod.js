@@ -7939,24 +7939,10 @@ var SettingType;
 
 // src/config/debug.js
 var DEBUG = true;
-var buffer = [];
 function dlog(...args) {
   if (!DEBUG)
     return;
-  const line = `[${(/* @__PURE__ */ new Date()).toISOString()}] ` + args.map(
-    (a) => typeof a === "object" ? JSON.stringify(a) : String(a)
-  ).join(" ");
-  buffer.push(line);
   console.log("[polyfly]", ...args);
-}
-function saveLog() {
-  const blob = new Blob([buffer.join("\n")], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "polyfly-log.txt";
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 // src/api/urlBridge.js
@@ -8156,6 +8142,8 @@ var physics = {
       const d = e && e.data;
       if (!d)
         return;
+      if (d.__pfLog)
+        console.log("[polyfly/worker]", d.__pfLog);
       if (d.__pfLog)
         console.log("[polyfly/worker]", d.__pfLog);
       if (d.__pfSnap) {
@@ -9768,10 +9756,6 @@ var PolyFlyMod = class extends PolyMod {
     } catch (e) {
       dlog("wasmHook FAIL", e.message);
     }
-    addEventListener("keydown", (e) => {
-      if (e.code === "F9")
-        saveLog();
-    }, true);
     dlog("preInit done");
   };
   onGameLoad = () => {
