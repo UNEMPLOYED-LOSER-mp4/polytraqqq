@@ -8717,6 +8717,7 @@ function patchAndInject(url) {
   }
   const blobUrl = URL.createObjectURL(new Blob([src], { type: "application/javascript" }));
   const s = document.createElement("script");
+  s.type = "module";
   s.src = blobUrl;
   document.head.appendChild(s);
 }
@@ -8725,6 +8726,8 @@ function tryInterceptScript(node) {
     return false;
   const src = node.getAttribute("src");
   if (!src || !src.includes(TARGET))
+    return false;
+  if (polyfly.collectMainPatches().length === 0)
     return false;
   const absUrl = node.src;
   node.remove();
