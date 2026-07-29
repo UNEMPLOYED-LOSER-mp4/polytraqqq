@@ -9763,7 +9763,14 @@ var PolyFlyMod = class extends PolyMod {
       dlog("preInit done");
     };
     this.onGameLoad = () => {
-      dlog("onGameLoad, mounting gui");
+      dlog("onGameLoad start");
+      if (Object.keys(polyfly.getFeatures()).length === 0) {
+        dlog("features empty in onGameLoad \u2014 registering now");
+        registerAllFeatures();
+        polyfly.persistNow();
+        polyfly.installControls();
+      }
+      dlog("features:", Object.keys(polyfly.getFeatures()));
       gui.install();
       dlog("gui mounted, host exists:", !!document.getElementById("polyfly-host"));
     };
