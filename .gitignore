@@ -1,16 +1,13 @@
-# SSH key (never commit)
 .git-ssh/
-
-# Build tooling and dependencies — not served
 node_modules/
+dist/
+src/
+build.js
+build.sh
+deploy.sh
 package.json
 package-lock.json
 tailwind.config.js
-build.sh
 README.md
-
-# Source — only the built mod is hosted
-assets/
-
-# Keep the built mod: manifest.json + 1.0.0/ are NOT ignored
-node_modules/
+poc.zip
+*.zip
