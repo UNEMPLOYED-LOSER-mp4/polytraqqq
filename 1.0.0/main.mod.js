@@ -9738,11 +9738,14 @@ function registerAllFeatures() {
 var PolyFlyMod = class extends PolyMod {
   constructor() {
     super();
-    this.preInit = (pml) => {
+    const setup = (pml, where) => {
+      if (this.__pfSetupDone)
+        return;
+      this.__pfSetupDone = true;
       this.pml = pml;
-      dlog("preInit start, baseUrl:", this.baseUrl);
+      dlog("setup from", where, "baseUrl:", this.baseUrl);
       registerAllFeatures();
-      dlog("features registered:", Object.keys(polyfly.getFeatures()));
+      dlog("features:", Object.keys(polyfly.getFeatures()));
       polyfly.persistNow();
       polyfly.installControls();
       try {
@@ -9763,17 +9766,11 @@ var PolyFlyMod = class extends PolyMod {
       } catch (e) {
         dlog("wasmHook FAIL", e.message);
       }
-      dlog("preInit done");
     };
+    this.preInit = (pml) => setup(pml, "preInit");
+    this.init = (pml) => setup(pml, "init");
     this.onGameLoad = () => {
-      dlog("onGameLoad start");
-      if (Object.keys(polyfly.getFeatures()).length === 0) {
-        dlog("features empty in onGameLoad \u2014 registering now");
-        registerAllFeatures();
-        polyfly.persistNow();
-        polyfly.installControls();
-      }
-      dlog("features:", Object.keys(polyfly.getFeatures()));
+      dlog("onGameLoad, mounting gui");
       gui.install();
       dlog("gui mounted, host exists:", !!document.getElementById("polyfly-host"));
     };
