@@ -7937,6 +7937,28 @@ var SettingType;
   SettingType2["CUSTOM"] = "custom";
 })(SettingType || (SettingType = {}));
 
+// src/config/debug.js
+var DEBUG = true;
+var buffer = [];
+function dlog(...args) {
+  if (!DEBUG)
+    return;
+  const line = `[${(/* @__PURE__ */ new Date()).toISOString()}] ` + args.map(
+    (a) => typeof a === "object" ? JSON.stringify(a) : String(a)
+  ).join(" ");
+  buffer.push(line);
+  console.log("[polyfly]", ...args);
+}
+function saveLog() {
+  const blob = new Blob([buffer.join("\n")], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "polyfly-log.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // src/api/urlBridge.js
 function installUrlBridge(baseUrl) {
   try {
@@ -9714,27 +9736,39 @@ function registerAllFeatures() {
 var PolyFlyMod = class extends PolyMod {
   preInit = (pml) => {
     this.pml = pml;
+    dlog("preInit start, baseUrl:", this.baseUrl);
     registerAllFeatures();
+    dlog("features registered:", Object.keys(polyfly.getFeatures()));
     polyfly.persistNow();
     polyfly.installControls();
     try {
       installUrlBridge(this.baseUrl);
+      dlog("urlBridge ok");
     } catch (e) {
-      console.error("[polyfly] urlBridge", e);
+      dlog("urlBridge FAIL", e.message);
     }
     try {
       installMainBundlePatcher();
+      dlog("mainPatcher ok");
     } catch (e) {
-      console.error("[polyfly] mainPatcher", e);
+      dlog("mainPatcher FAIL", e.message);
     }
     try {
       installWasmHook();
+      dlog("wasmHook ok");
     } catch (e) {
-      console.error("[polyfly] wasmHook", e);
+      dlog("wasmHook FAIL", e.message);
     }
+    addEventListener("keydown", (e) => {
+      if (e.code === "F9")
+        saveLog();
+    }, true);
+    dlog("preInit done");
   };
   onGameLoad = () => {
+    dlog("onGameLoad, mounting gui");
     gui.install();
+    dlog("gui mounted, host exists:", !!document.getElementById("polyfly-host"));
   };
 };
 var polyMod = new PolyFlyMod();
