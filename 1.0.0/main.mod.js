@@ -7948,8 +7948,10 @@ function dlog(...args) {
 // src/api/urlBridge.js
 function installUrlBridge(baseUrl) {
   try {
-    const url = `${baseUrl}/1.0.0/assets/bin/polytrack_mod.wasm`;
+    const base = String(baseUrl || "").replace(/\/+$/, "");
+    const url = `${base}/1.0.0/assets/bin/polytrack_mod.wasm`;
     document.documentElement.dataset.polyflyWasmUrl = url;
+    console.log("[polyfly] wasm url:", url);
   } catch (e) {
     console.error("[polyfly] urlBridge failed:", e);
   }
@@ -9731,38 +9733,41 @@ function registerAllFeatures() {
 
 // src/main.mod.jsx
 var PolyFlyMod = class extends PolyMod {
-  preInit = (pml) => {
-    this.pml = pml;
-    dlog("preInit start, baseUrl:", this.baseUrl);
-    registerAllFeatures();
-    dlog("features registered:", Object.keys(polyfly.getFeatures()));
-    polyfly.persistNow();
-    polyfly.installControls();
-    try {
-      installUrlBridge(this.baseUrl);
-      dlog("urlBridge ok");
-    } catch (e) {
-      dlog("urlBridge FAIL", e.message);
-    }
-    try {
-      installMainBundlePatcher();
-      dlog("mainPatcher ok");
-    } catch (e) {
-      dlog("mainPatcher FAIL", e.message);
-    }
-    try {
-      installWasmHook();
-      dlog("wasmHook ok");
-    } catch (e) {
-      dlog("wasmHook FAIL", e.message);
-    }
-    dlog("preInit done");
-  };
-  onGameLoad = () => {
-    dlog("onGameLoad, mounting gui");
-    gui.install();
-    dlog("gui mounted, host exists:", !!document.getElementById("polyfly-host"));
-  };
+  constructor() {
+    super();
+    this.preInit = (pml) => {
+      this.pml = pml;
+      dlog("preInit start, baseUrl:", this.baseUrl);
+      registerAllFeatures();
+      dlog("features registered:", Object.keys(polyfly.getFeatures()));
+      polyfly.persistNow();
+      polyfly.installControls();
+      try {
+        installUrlBridge(this.baseUrl);
+        dlog("urlBridge ok");
+      } catch (e) {
+        dlog("urlBridge FAIL", e.message);
+      }
+      try {
+        installMainBundlePatcher();
+        dlog("mainPatcher ok");
+      } catch (e) {
+        dlog("mainPatcher FAIL", e.message);
+      }
+      try {
+        installWasmHook();
+        dlog("wasmHook ok");
+      } catch (e) {
+        dlog("wasmHook FAIL", e.message);
+      }
+      dlog("preInit done");
+    };
+    this.onGameLoad = () => {
+      dlog("onGameLoad, mounting gui");
+      gui.install();
+      dlog("gui mounted, host exists:", !!document.getElementById("polyfly-host"));
+    };
+  }
 };
 var polyMod = new PolyFlyMod();
 export {
