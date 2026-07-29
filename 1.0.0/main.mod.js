@@ -7855,8 +7855,87 @@ var require_jsx_runtime = __commonJS({
   }
 });
 
-// src/main.mod.jsx
-import { PolyMod } from "https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.2/PolyTypes.js";
+// src/vendor/PolyTypes.js
+var PolyMod = class {
+  constructor() {
+    this.loaded = false;
+    this.init = (pmlInstance) => {
+    };
+    this.postInit = () => {
+    };
+    this.onGameLoad = () => {
+    };
+    this.preInit = (pmlInstance) => {
+    };
+    this.offlineMode = false;
+  }
+  /**
+   * The the mod's icon file URL.
+   */
+  get iconSrc() {
+    return this.IconSrc;
+  }
+  set iconSrc(src) {
+    this.IconSrc = src;
+  }
+  set setLoaded(status) {
+    this.loaded = status;
+  }
+  /**
+   * The mod's loaded state.
+   */
+  get isLoaded() {
+    return this.loaded;
+  }
+  /**
+   * The mod's base URL.
+   */
+  get baseUrl() {
+    return this.modBaseUrl;
+  }
+  set baseUrl(url) {
+    this.modBaseUrl = url;
+  }
+  /**
+   * Whether the mod is saved as to always fetch latest version (`true`)
+   * or to fetch a specific version (`false`, with version defined by {@link PolyMod.modVersion}).
+   */
+  get savedLatest() {
+    return this.latestSaved;
+  }
+  set savedLatest(latest) {
+    this.latestSaved = latest;
+  }
+  get initialized() {
+    return this.modInitialized;
+  }
+  set initialized(initState) {
+    this.modInitialized = initState;
+  }
+};
+var MixinType;
+(function(MixinType2) {
+  MixinType2[MixinType2["HEAD"] = 0] = "HEAD";
+  MixinType2[MixinType2["TAIL"] = 1] = "TAIL";
+  MixinType2[MixinType2["OVERRIDE"] = 2] = "OVERRIDE";
+  MixinType2[MixinType2["INSERT"] = 3] = "INSERT";
+  MixinType2[MixinType2["REPLACEBETWEEN"] = 5] = "REPLACEBETWEEN";
+  MixinType2[MixinType2["REMOVEBETWEEN"] = 6] = "REMOVEBETWEEN";
+  MixinType2[MixinType2["CLASSINSERT"] = 8] = "CLASSINSERT";
+  MixinType2[MixinType2["CLASSREMOVE"] = 4] = "CLASSREMOVE";
+  MixinType2[MixinType2["CLASSREPLACE"] = 7] = "CLASSREPLACE";
+})(MixinType || (MixinType = {}));
+var PhysicsMixinType;
+(function(PhysicsMixinType2) {
+  PhysicsMixinType2[PhysicsMixinType2["PATCH_F32"] = 0] = "PATCH_F32";
+  PhysicsMixinType2[PhysicsMixinType2["PATCH_I32"] = 1] = "PATCH_I32";
+})(PhysicsMixinType || (PhysicsMixinType = {}));
+var SettingType;
+(function(SettingType2) {
+  SettingType2["BOOL"] = "boolean";
+  SettingType2["SLIDER"] = "slider";
+  SettingType2["CUSTOM"] = "custom";
+})(SettingType || (SettingType = {}));
 
 // src/api/urlBridge.js
 function installUrlBridge(baseUrl) {
