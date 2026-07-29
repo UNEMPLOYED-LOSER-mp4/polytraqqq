@@ -9635,12 +9635,24 @@ function registerAllFeatures() {
 var PolyFlyMod = class extends PolyMod {
   preInit = (pml) => {
     this.pml = pml;
-    installUrlBridge(this.baseUrl);
     registerAllFeatures();
     polyfly.persistNow();
-    installMainBundlePatcher();
-    installWasmHook();
     polyfly.installControls();
+    try {
+      installUrlBridge(this.baseUrl);
+    } catch (e) {
+      console.error("[polyfly] urlBridge", e);
+    }
+    try {
+      installMainBundlePatcher();
+    } catch (e) {
+      console.error("[polyfly] mainPatcher", e);
+    }
+    try {
+      installWasmHook();
+    } catch (e) {
+      console.error("[polyfly] wasmHook", e);
+    }
   };
   onGameLoad = () => {
     gui.install();
