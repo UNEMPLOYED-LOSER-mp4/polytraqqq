@@ -8672,13 +8672,16 @@ function installWasmHook() {
   }
   window.Worker = function patchedWorker(url, options) {
     const workerUrl = String(url);
-    if (!workerUrl.includes(TARGET_WORKER_NAME)) {
+    const isSim = workerUrl.includes(TARGET_WORKER_NAME) || workerUrl.startsWith("blob:");
+    if (!isSim || window.__polyflySimWrapped) {
       return new NativeWorker(url, options);
     }
+    window.__polyflySimWrapped = true;
+    console.log("[polyfly] intercepting sim worker:", workerUrl.slice(0, 60));
     const initialWrites = polyfly.collectWasmWrites().writes;
     const workerPatches = polyfly.collectWorkerPatches();
     const workerInit = polyfly.collectWorkerInit();
-    const realUrl = new URL(workerUrl, location.href).href;
+    const realUrl = new URL("simulation_worker.bundle.js", location.href).href;
     const bootstrap = buildBootstrap(realUrl, modUrl, initialWrites, workerPatches, workerInit);
     const blobUrl = URL.createObjectURL(
       new Blob([bootstrap], { type: "application/javascript" })
