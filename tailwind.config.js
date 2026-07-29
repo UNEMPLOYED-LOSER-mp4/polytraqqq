@@ -1,32 +1,45 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
+  // Scan all JSX/JS files under our GUI source for utility class usage.
+  // Tailwind v3 needs explicit content paths to know what to emit.
   content: [
-    "./assets/src/js/**/*.{js,jsx}"
+    "./src/api/gui/**/*.{js,jsx}",
   ],
-  corePlugins: {
-    preflight: false
-  },
   theme: {
     extend: {
-      fontFamily: {
-        serif: ["Fraunces", "ui-serif", "Georgia", "serif"],
-        mono: ["JetBrains Mono", "ui-monospace", "SF Mono", "Menlo", "monospace"]
+      colors: {
+        // Custom brand palette used throughout the GUI. Reference via
+        // utility classes like bg-pf-accent, text-pf-text, border-pf-panel-border.
+        // RGB-triple-with-alpha-channel pattern so opacity modifiers work
+        // (e.g. bg-pf-accent/30, hover:bg-pf-accent/50).
+        "pf-accent": "rgb(255 58 58 / <alpha-value>)",
+        "pf-panel": "rgb(15 15 17 / <alpha-value>)",
+        "pf-panel-border": "rgb(255 58 58 / <alpha-value>)",
+        "pf-text": "rgb(232 232 234 / <alpha-value>)",
+        "pf-text-dim": "rgb(139 139 146 / <alpha-value>)",
       },
-      fontSize: {
-        "3xs": "var(--text-3xs)",
-        "2xs": "var(--text-2xs)",
-        "xs": ["var(--text-xs)", { lineHeight: "1rem" }],
-        "sm": ["var(--text-sm)", { lineHeight: "1.25rem" }],
-        "base": ["1rem", { lineHeight: "1.5rem" }],
-        "lg": ["var(--text-lg)", { lineHeight: "1.75rem" }],
-        "xl": ["var(--text-xl)", { lineHeight: "1.75rem" }],
-        "2xl": ["var(--text-2xl)", { lineHeight: "2rem" }],
-        "3xl": ["var(--text-3xl)", { lineHeight: "1.15" }],
-        "4xl": ["var(--text-4xl)", { lineHeight: "1.1" }],
-        "5xl": ["var(--text-5xl)", { lineHeight: "1.03" }],
-        "6xl": ["var(--text-6xl)", { lineHeight: "1.03" }],
-        "7xl": ["var(--text-7xl)", { lineHeight: "1.0" }]
-      }
-    }
+      fontFamily: {
+        mono: ["ui-monospace", "JetBrains Mono", "SF Mono", "Menlo", "monospace"],
+      },
+      keyframes: {
+        "pf-pulse": {
+          "50%": { opacity: "0.6" },
+        },
+        "pf-pop-in": {
+          "0%":   { opacity: "0", transform: "scale(0.96) translateY(-8px)" },
+          "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        "pf-dot-pulse": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%":      { opacity: "0.5", transform: "scale(1.4)" },
+        },
+      },
+      animation: {
+        "pf-pulse": "pf-pulse 1s ease-in-out infinite",
+        "pf-pop-in": "pf-pop-in 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both",
+        "pf-dot-pulse": "pf-dot-pulse 1.5s ease-in-out infinite",
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };
