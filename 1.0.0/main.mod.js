@@ -8156,6 +8156,8 @@ var physics = {
       const d = e && e.data;
       if (!d)
         return;
+      if (d.__pfLog)
+        console.log("[polyfly/worker]", d.__pfLog);
       if (d.__pfSnap) {
         const s = d.__pfSnap;
         if (typeof s.carPtr === "number")
@@ -8542,6 +8544,7 @@ self.fetch = function (input, init) {
   try {
     const raw = (input && input.url) || String(input);
     if (/polytrack_physics\\.wasm(\\?|$)/.test(raw)) {
+      postMessage({ __pfLog: "SERVING MODDED WASM: " + raw });
       return __pfWasmBytesP.then(buf => new Response(buf, {
         status: 200,
         headers: { "Content-Type": "application/wasm" },
@@ -8566,7 +8569,10 @@ function __pfApplyPending() {
 }
 
 function __pfMaybeCapture(instance) {
-  if (!instance || !instance.exports || !instance.exports[__pfCanary]) return;
+  if (!instance || !instance.exports) { postMessage({ __pfLog: "instantiate: no exports" }); return; }
+  postMessage({ __pfLog: "instantiate exports[0..30]: " + Object.keys(instance.exports).slice(0,30).join(",") });
+  if (!instance.exports[__pfCanary]) { postMessage({ __pfLog: "CANARY '" + __pfCanary + "' MISSING - not capturing" }); return; }
+  postMessage({ __pfLog: "CAPTURED physics instance" });
   self.__pfInstance = instance;
   if (instance.exports.l && instance.exports.A && !instance.exports.A.value) {
     try {
